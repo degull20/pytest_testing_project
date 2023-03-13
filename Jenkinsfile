@@ -1,5 +1,5 @@
 - job:
-    name: py-test-2-job
+    name: config-template
     kind: pipeline
 
 # Define the trigger for the job
@@ -20,8 +20,8 @@
             uses: actions/checkout@v2
           - name: Install Dependencies
             run: pip install -r requirements.txt
-          - name: Run Tests
-            run: pytest
+          - name: Run Python Script 
+            run: python py_test_runner.py
           - name: Package Artifacts
             run: zip -r artifacts.zip .
 
