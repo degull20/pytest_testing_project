@@ -1,26 +1,49 @@
-# Define the job name and its type
--job:
+- job:
     name: py-test-job
-    kind: pipeline
+    description: This is a Jenkins pipeline job
+    concurrent: true
+    
 
 # Define the source code management
     scm:
       git:
-        url: https://github.com/degull20/pytest_testing_project.git
-        branch: main
+        remote:
+          url: "https://github.com/degull20/pytest_testing_project.git"
+          credentialsId: "my-git-credentials"
+        branch: "main"
 
 # Define the pipeline script using a Jenkinsfile in the source code repository
-    pipelineSCM:
-      scriptPath: Jenkinsfile
+    definition:
+      scm:
+        lightweight: true
+        scriptPath: Jenkinsfile
+
+# Define the build section
+    steps:
+      - maven:
+          mavenName: "Maven 3.6.0"
+          goals: "clean test"
+          options: "-Dmaven.test.failure.ignore=true"
 
 # Define the publisher section
-    publisher:
-      email:
-        recipients: myemail@example.com
-        body: |
-          The build of ${JOB_NAME} ${BUILD_NUMBER} has completed. The build status was ${BUILD_STATUS}.
+    publishers:
+      - archiveArtifacts:
+          artifacts: "target/*.jar, target/*.zip"
+          excludes: ""
+      - emailext:
+          subject: "Jenkins build ${BUILD_NUMBER} for ${JOB_NAME}: ${BUILD_STATUS}"
+          body: |
+            <p>The build of ${JOB_NAME} ${BUILD_NUMBER} has completed. The build status was ${BUILD_STATUS}.</p>
+            <p>View the build at ${BUILD_URL}</p>
+          recipientProviders:
+            developers
+          attachmentsPattern: "target/*.jar, target/*.zip"
 
 # Define the agent section
-    agent:
+    node:
       docker:
-        image: python:3.9-alpine
+        image: "maven:3.6.0-jdk-8-alpine"
+        args: "-v /var/run/docker.sock:/var/run/docker.sock"
+        label: "docker-agent"
+        registryUrl: "https://index.docker.io/v1/"
+        registryCredentialsId: "my-docker-credentials"
