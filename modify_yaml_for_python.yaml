@@ -1,0 +1,44 @@
+- job:
+    name: py-test-job355
+    kind: pipeline
+
+    scm:
+      - git:
+         url: https://github.com/degull20/pytest_testing_project.git
+         branch: main
+
+    pipeline:
+      scriptPath: Jenkinsfile
+
+    environment:
+      PYTHON_VERSION: '3.8.12'
+
+    steps:
+      - name: Checkout
+        git:
+          url: https://github.com/degull20/pytest_testing_project.git
+          branch: main
+
+      - name: Install Dependencies
+        sh: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Pytest
+        sh: |
+          source venv/bin/activate
+          pytest --junitxml=reports/results.xml --cov=app --cov-report=xml --cov-report=html tests/
+
+    publisher:
+      email:
+        recipients: myemail@example.com
+        body: |
+          The build of ${JOB_NAME} ${BUILD_NUMBER} has completed. The build status was ${BUILD_STATUS}.
+
+    properties:
+      - build-discarder:
+          days-to-keep: 10
+          num-to-keep: 30
+          artifact-num-to-keep: 5
