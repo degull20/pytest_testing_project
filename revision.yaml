@@ -1,5 +1,5 @@
 - job:
-    name: py-test-job30
+    name: py-test-job455
     kind: pipeline
 
     scm:
@@ -9,6 +9,11 @@
 
     pipeline:
       scriptPath: Jenkinsfile
+
+    steps:
+      - shell: |
+          pip install -r requirements.txt
+          pytest
 
     publisher:
       email:
@@ -21,3 +26,9 @@
           days-to-keep: 10
           num-to-keep: 30
           artifact-num-to-keep: 5
+
+    parameters:
+     - string:
+        name: software_release_version
+        description: "Enter the software release version"
+        defaultValue: "1.0.0"

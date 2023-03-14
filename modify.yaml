@@ -1,5 +1,5 @@
 - job:
-    name: py-test-job30
+    name: py-test-job304
     kind: pipeline
 
     scm:
@@ -9,6 +9,13 @@
 
     pipeline:
       scriptPath: Jenkinsfile
+
+    steps:
+      - shell: |
+          virtualenv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          pytest
 
     publisher:
       email:

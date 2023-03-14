@@ -1,5 +1,5 @@
 - job:
-    name: py-test-job30
+    name: py-test-job883
     kind: pipeline
 
     scm:
@@ -9,6 +9,24 @@
 
     pipeline:
       scriptPath: Jenkinsfile
+
+    environment:
+      PYTHONPATH: "/path/to/python/libraries"
+
+    steps:
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Run pytest
+        run: |
+          coverage run --source=. -m pytest
+          coverage report -m
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: htmlcov/
 
     publisher:
       email:

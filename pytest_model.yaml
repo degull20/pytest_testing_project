@@ -1,5 +1,5 @@
 - job:
-    name: py-test-job30
+    name: py-test-job808
     kind: pipeline
 
     scm:
@@ -9,6 +9,13 @@
 
     pipeline:
       scriptPath: Jenkinsfile
+
+    build:
+      - python:
+          version: '3.8'
+          install_requirements: requirements.txt
+          script: |
+            python3 -m pytest tests/
 
     publisher:
       email:
@@ -21,3 +28,6 @@
           days-to-keep: 10
           num-to-keep: 30
           artifact-num-to-keep: 5
+
+    wrappers:
+      - timestamps
